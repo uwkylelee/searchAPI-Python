@@ -7,31 +7,31 @@ from tokenize.tokenizer import tokenizer
 class SearchEngine:
     def __init__(self, product_data: dict):
         self.product_data = product_data
-        self.tokenized_text = self._generate_tokenized_data()
+        self.tokenized_data = self._generate_tokenized_data()
         self.inverted_index = self._generate_inverted_index()
         self.tf, self.df = self._generate_tf_df()
 
     def _generate_tokenized_data(self):
         print_log('Tokenizing the text data...\n')
-        tokenized_text: dict = defaultdict(list)
+        tokenized_data: dict = defaultdict(list)
         length = len(self.product_data)
         i = 0
         for pid, name in self.product_data.items():
             print_progress(100, length, i)
-            tokenized_text[pid] = tokenizer(name)
+            tokenized_data[pid] = tokenizer(name)
             i += 1
 
         print_log('Successfully tokenized the text data!\n')
 
-        return tokenized_text
+        return tokenized_data
 
     def _generate_inverted_index(self):
         print_log('Building a dictionary of inverted index...')
 
         inverted_index: dict = defaultdict(list)
-        length = len(self.tokenized_text)
+        length = len(self.tokenized_data)
         i = 0
-        for pid, tokens in self.tokenized_text.items():
+        for pid, tokens in self.tokenized_data.items():
             print_progress(100, length, i)
             for token in tokens:
                 inverted_index[token].append(pid)
@@ -42,13 +42,13 @@ class SearchEngine:
         return inverted_index
 
     def _generate_tf_df(self):
-        print_log('Generating a dictionary of inverted index...')
+        print_log('Generating dictionaries of term_frequency and document_frequency...')
 
         tf: dict = defaultdict(dict)
         df: dict = defaultdict(int)
-        length = len(self.tokenized_text)
+        length = len(self.tokenized_data)
         i = 0
-        for pid, tokens in self.tokenized_text.items():
+        for pid, tokens in self.tokenized_data.items():
             print_progress(100, length, i)
             for token in tokens:
                 if tf[pid].get(token) is None:
@@ -60,7 +60,7 @@ class SearchEngine:
                 df[token] += 1
             i += 1
 
-        print_log('Successfully generated the dictionary of term_frequency and document_frequency!\n')
+        print_log('Successfully generated the dictionaries of term_frequency and document_frequency!\n')
 
         return tf, df
 
